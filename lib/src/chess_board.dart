@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:chess/chess.dart' hide State;
+import 'package:chess/chess.dart' as chess;
 import 'package:chess_vectors_flutter/chess_vectors_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -36,7 +36,7 @@ class ChessBoard extends StatefulWidget {
 class _ChessBoardState extends State<ChessBoard> {
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<Chess>(
+    return ValueListenableBuilder<chess.Chess>(
       valueListenable: widget.controller,
       builder: (context, game, _) {
         return SizedBox(
@@ -76,20 +76,19 @@ class _ChessBoardState extends State<ChessBoard> {
 
                     final draggable = pieceOnSquare != null
                         ? Draggable<PieceMoveData>(
-                      data: PieceMoveData(
-                        squareName: squareName,
-                        pieceType: pieceOnSquare.type.toUpperCase(),
-                        pieceColor: pieceOnSquare.color,
-                      ),
-                      feedback: SizedBox(
-                        width: widget.size != null ? widget.size! / 8 : 48,
-                        height:
-                        widget.size != null ? widget.size! / 8 : 48,
-                        child: piece,
-                      ),
-                      childWhenDragging: const SizedBox(),
-                      child: piece,
-                    )
+                            data: PieceMoveData(
+                              squareName: squareName,
+                              pieceType: pieceOnSquare.type.toUpperCase(),
+                              pieceColor: pieceOnSquare.color,
+                            ),
+                            feedback: SizedBox(
+                              width: widget.size != null ? widget.size! / 8 : 48,
+                              height: widget.size != null ? widget.size! / 8 : 48,
+                              child: piece,
+                            ),
+                            childWhenDragging: const SizedBox(),
+                            child: piece,
+                          )
                         : Container();
 
                     final dragTarget = DragTarget<PieceMoveData>(
@@ -104,11 +103,11 @@ class _ChessBoardState extends State<ChessBoard> {
 
                         if (pieceMoveData.pieceType == "P" &&
                             ((pieceMoveData.squareName[1] == "7" &&
-                                squareName[1] == "8" &&
-                                pieceMoveData.pieceColor == Color.WHITE) ||
+                                    squareName[1] == "8" &&
+                                    pieceMoveData.pieceColor == chess.Color.WHITE) ||
                                 (pieceMoveData.squareName[1] == "2" &&
                                     squareName[1] == "1" &&
-                                    pieceMoveData.pieceColor == Color.BLACK))) {
+                                    pieceMoveData.pieceColor == chess.Color.BLACK))) {
                           final val = await _promotionDialog(context);
 
                           if (val != null) {
@@ -145,8 +144,7 @@ class _ChessBoardState extends State<ChessBoard> {
                   child: AspectRatio(
                     aspectRatio: 1.0,
                     child: CustomPaint(
-                      painter:
-                      _ArrowPainter(widget.arrows, widget.boardOrientation),
+                      painter: _ArrowPainter(widget.arrows, widget.boardOrientation),
                     ),
                   ),
                 ),
@@ -178,25 +176,23 @@ class _ChessBoardState extends State<ChessBoard> {
   String _boardAssetPath(BoardColor color) {
     switch (color) {
       case BoardColor.brown:
-        return 'assets/boards/board_brown.svg';
+        return 'images/boards/board_brown.svg';
       case BoardColor.darkBrown:
-        return 'assets/boards/board_dark_brown.svg';
+        return 'images/boards/board_dark_brown.svg';
       case BoardColor.green:
-        return 'assets/boards/board_green.svg';
+        return 'images/boards/board_green.svg';
       case BoardColor.orange:
-        return 'assets/boards/board_orange.svg';
-
-      case BoardColor.tournamentGreen:
-        return 'assets/boards/board_tournament_green.png';
+        return 'images/boards/board_orange.svg';
+      case BoardColor.tournament:
+        return 'images/boards/tournament.png';
       case BoardColor.walnut:
-        return 'assets/boards/board_walnut.png';
-
-      case BoardColor.tournamentWood:
-        return 'assets/boards/board_tournament_wood.svg';
-      case BoardColor.fritzBlue:
-        return 'assets/boards/board_fritz_blue.svg';
-      case BoardColor.tournamentBlue:
-        return 'assets/boards/board_tournament_blue.svg';
+        return 'images/boards/walnut.png';
+      case BoardColor.wood:
+        return 'images/boards/board_wood.svg';
+      case BoardColor.blue:
+        return 'images/boards/board_blue.svg';
+      case BoardColor.purple:
+        return 'images/boards/board_purple.svg';
     }
   }
 
@@ -246,7 +242,7 @@ class _ChessBoardState extends State<ChessBoard> {
 
 class BoardPiece extends StatelessWidget {
   final String squareName;
-  final Chess game;
+  final chess.Chess game;
 
   const BoardPiece({
     Key? key,
@@ -264,7 +260,8 @@ class BoardPiece extends StatelessWidget {
     }
 
     final piece =
-        (square.color == Color.WHITE ? 'W' : 'B') + square.type.toUpperCase();
+        (square.color == chess.Color.WHITE ? 'W' : 'B') +
+        square.type.toUpperCase();
 
     switch (piece) {
       case "WP":
@@ -314,7 +311,7 @@ class BoardPiece extends StatelessWidget {
 class PieceMoveData {
   final String squareName;
   final String pieceType;
-  final Color pieceColor;
+  final chess.Color pieceColor;
 
   PieceMoveData({
     required this.squareName,

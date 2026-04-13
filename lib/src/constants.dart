@@ -5,11 +5,11 @@ enum BoardColor {
   darkBrown,
   orange,
   green,
-  tournamentGreen,
+  tournament,
   walnut,
-  tournamentWood,
-  fritzBlue,
-  tournamentBlue,
+  wood,
+  blue,
+  purple,
 }
 
 enum PlayerColor {
