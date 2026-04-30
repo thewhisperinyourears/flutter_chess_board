@@ -52,7 +52,7 @@ class _HomePageState extends State<HomePage> {
                   BoardArrow(
                     from: 'e7',
                     to: 'e5',
-                    color: Colors.red.withOpacity(0.7),
+                    color: Colors.red.withValues(alpha: 0.7),
                   ),
                 ],
                 boardOrientation: PlayerColor.white,

@@ -17,6 +17,13 @@ enum PlayerColor {
   black,
 }
 
-enum BoardPieceType { Pawn, Rook, Knight, Bishop, Queen, King }
+enum BoardPieceType {
+  pawn,
+  rook,
+  knight,
+  bishop,
+  queen,
+  king,
+}
 
-RegExp squareRegex = RegExp("^[A-H|a-h][1-8]\$");
+final RegExp squareRegex = RegExp(r'^[A-Ha-h][1-8]$');

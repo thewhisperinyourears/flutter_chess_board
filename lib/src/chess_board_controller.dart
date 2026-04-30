@@ -1,9 +1,10 @@
 import 'package:chess/chess.dart';
 import 'package:flutter/material.dart';
+
 import 'constants.dart';
 
 class ChessBoardController extends ValueNotifier<Chess> {
-  late Chess game;
+  Chess game;
 
   factory ChessBoardController() => ChessBoardController._(Chess());
 
@@ -13,23 +14,28 @@ class ChessBoardController extends ValueNotifier<Chess> {
   factory ChessBoardController.fromFEN(String fen) =>
       ChessBoardController._(Chess.fromFEN(fen));
 
-  ChessBoardController._(Chess game)
-      : game = game,
-        super(game);
+  ChessBoardController._(this.game) : super(game);
 
   /// Makes move on the board
   void makeMove({required String from, required String to}) {
-    game.move({"from": from, "to": to});
+    game.move({'from': from, 'to': to});
     notifyListeners();
   }
 
-  /// Makes move and promotes pawn to piece (from is a square like d4, to is also a square like e3, pieceToPromoteTo is a String like "Q".
-  /// pieceToPromoteTo String will be changed to enum in a future update and this method will be deprecated in the future
-  void makeMoveWithPromotion(
-      {required String from,
-      required String to,
-      required String pieceToPromoteTo}) {
-    game.move({"from": from, "to": to, "promotion": pieceToPromoteTo});
+  /// Makes move and promotes pawn to piece.
+  ///
+  /// [from] is a square like d4, [to] is also a square like e3,
+  /// [pieceToPromoteTo] is a String like "Q".
+  void makeMoveWithPromotion({
+    required String from,
+    required String to,
+    required String pieceToPromoteTo,
+  }) {
+    game.move({
+      'from': from,
+      'to': to,
+      'promotion': pieceToPromoteTo,
+    });
     notifyListeners();
   }
 
@@ -70,7 +76,7 @@ class ChessBoardController extends ValueNotifier<Chess> {
     notifyListeners();
   }
 
-  /// Loads a PGN
+  /// Loads a FEN
   void loadFen(String fen) {
     game.load(fen);
     notifyListeners();
@@ -134,20 +140,21 @@ class ChessBoardController extends ValueNotifier<Chess> {
 
   /// Gets respective piece
   Piece _getPiece(BoardPieceType piece, PlayerColor color) {
-    var convertedColor = color == PlayerColor.white ? Color.WHITE : Color.BLACK;
+    final convertedColor =
+        color == PlayerColor.white ? Color.WHITE : Color.BLACK;
 
     switch (piece) {
-      case BoardPieceType.Bishop:
+      case BoardPieceType.bishop:
         return Piece(PieceType.BISHOP, convertedColor);
-      case BoardPieceType.Queen:
+      case BoardPieceType.queen:
         return Piece(PieceType.QUEEN, convertedColor);
-      case BoardPieceType.King:
+      case BoardPieceType.king:
         return Piece(PieceType.KING, convertedColor);
-      case BoardPieceType.Knight:
+      case BoardPieceType.knight:
         return Piece(PieceType.KNIGHT, convertedColor);
-      case BoardPieceType.Pawn:
+      case BoardPieceType.pawn:
         return Piece(PieceType.PAWN, convertedColor);
-      case BoardPieceType.Rook:
+      case BoardPieceType.rook:
         return Piece(PieceType.ROOK, convertedColor);
     }
   }

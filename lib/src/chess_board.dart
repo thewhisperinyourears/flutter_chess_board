@@ -54,17 +54,22 @@ class _ChessBoardState extends State<ChessBoard> {
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 8,
                   ),
+                  itemCount: 64,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
                     final row = index ~/ 8;
                     final column = index % 8;
 
-                    final boardRank = widget.boardOrientation == PlayerColor.black
-                        ? '${row + 1}'
-                        : '${(7 - row) + 1}';
+                    final boardRank =
+                        widget.boardOrientation == PlayerColor.black
+                            ? '${row + 1}'
+                            : '${(7 - row) + 1}';
 
-                    final boardFile = widget.boardOrientation == PlayerColor.white
-                        ? files[column]
-                        : files[7 - column];
+                    final boardFile =
+                        widget.boardOrientation == PlayerColor.white
+                            ? files[column]
+                            : files[7 - column];
 
                     final squareName = '$boardFile$boardRank';
                     final pieceOnSquare = game.get(squareName);
@@ -82,8 +87,10 @@ class _ChessBoardState extends State<ChessBoard> {
                               pieceColor: pieceOnSquare.color,
                             ),
                             feedback: SizedBox(
-                              width: widget.size != null ? widget.size! / 8 : 48,
-                              height: widget.size != null ? widget.size! / 8 : 48,
+                              width:
+                                  widget.size != null ? widget.size! / 8 : 48,
+                              height:
+                                  widget.size != null ? widget.size! / 8 : 48,
                               child: piece,
                             ),
                             childWhenDragging: const SizedBox(),
@@ -95,30 +102,39 @@ class _ChessBoardState extends State<ChessBoard> {
                       builder: (context, candidateData, rejectedData) {
                         return draggable;
                       },
-                      onWillAccept: (pieceMoveData) {
+                      onWillAcceptWithDetails: (details) {
                         return widget.enableUserMoves;
                       },
-                      onAccept: (PieceMoveData pieceMoveData) async {
+                      onAcceptWithDetails: (details) async {
+                        final pieceMoveData = details.data;
                         final moveColor = game.turn;
 
-                        if (pieceMoveData.pieceType == "P" &&
-                            ((pieceMoveData.squareName[1] == "7" &&
-                                    squareName[1] == "8" &&
-                                    pieceMoveData.pieceColor == chess.Color.WHITE) ||
-                                (pieceMoveData.squareName[1] == "2" &&
-                                    squareName[1] == "1" &&
-                                    pieceMoveData.pieceColor == chess.Color.BLACK))) {
+                        final isWhitePromotion =
+                            pieceMoveData.pieceType == 'P' &&
+                                pieceMoveData.squareName[1] == '7' &&
+                                squareName[1] == '8' &&
+                                pieceMoveData.pieceColor == chess.Color.WHITE;
+
+                        final isBlackPromotion =
+                            pieceMoveData.pieceType == 'P' &&
+                                pieceMoveData.squareName[1] == '2' &&
+                                squareName[1] == '1' &&
+                                pieceMoveData.pieceColor == chess.Color.BLACK;
+
+                        if (isWhitePromotion || isBlackPromotion) {
                           final val = await _promotionDialog(context);
 
-                          if (val != null) {
-                            widget.controller.makeMoveWithPromotion(
-                              from: pieceMoveData.squareName,
-                              to: squareName,
-                              pieceToPromoteTo: val,
-                            );
-                          } else {
+                          if (!context.mounted) return;
+
+                          if (val == null) {
                             return;
                           }
+
+                          widget.controller.makeMoveWithPromotion(
+                            from: pieceMoveData.squareName,
+                            to: squareName,
+                            pieceToPromoteTo: val,
+                          );
                         } else {
                           widget.controller.makeMove(
                             from: pieceMoveData.squareName,
@@ -134,9 +150,6 @@ class _ChessBoardState extends State<ChessBoard> {
 
                     return dragTarget;
                   },
-                  itemCount: 64,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
                 ),
               ),
               if (widget.arrows.isNotEmpty)
@@ -144,7 +157,10 @@ class _ChessBoardState extends State<ChessBoard> {
                   child: AspectRatio(
                     aspectRatio: 1.0,
                     child: CustomPaint(
-                      painter: _ArrowPainter(widget.arrows, widget.boardOrientation),
+                      painter: _ArrowPainter(
+                        widget.arrows,
+                        widget.boardOrientation,
+                      ),
                     ),
                   ),
                 ),
@@ -259,8 +275,7 @@ class BoardPiece extends StatelessWidget {
       return Container();
     }
 
-    final piece =
-        (square.color == chess.Color.WHITE ? 'W' : 'B') +
+    final piece = (square.color == chess.Color.WHITE ? 'W' : 'B') +
         square.type.toUpperCase();
 
     switch (piece) {
